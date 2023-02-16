@@ -6,11 +6,13 @@ public class Rocket {
   public Rocket(float x, float y) {
     xPos = x;
     yPos = y;
+    xVel = 0;
+    yVel = 0;
     generation = 1;
-    lightColor = color(255);
+    lightColor = color((int)(Math.random())*256);
     setLifespan(100);
   }
-  
+
   public Rocket(Rocket parent) {
     xPos = parent.getX();
     yPos = parent.getY();
@@ -22,6 +24,12 @@ public class Rocket {
   }
   public float getX() {
     return xPos;
+  }
+  public color getColor() {
+    return lightColor;
+  }
+  public void setColor(color newColor) {
+    lightColor = newColor;
   }
   public float getY() {
     return yPos;
@@ -36,7 +44,7 @@ public class Rocket {
     return generation;
   }
   public void show() {
-    strokeWeight(2/(generation+1));
+    strokeWeight(10/(generation+1));
     stroke(lightColor);
     point(xPos, yPos);
   }
@@ -45,6 +53,9 @@ public class Rocket {
     yPos += yVel;
     yVel += 0.1; //could be moved before xPos in move()
     lifespan--;
+    if (yVel > 0) {
+      lifespan /= 1.1;
+    }
   }
   public void setYVel(float yV) {
     yVel = yV;
@@ -57,28 +68,29 @@ public class Rocket {
   }
   public int  getLifespan() {
     return lifespan;
-  }  
+  }
 }
 
 ArrayList <Rocket> rockets = new ArrayList <Rocket>();
 
 public void setup() {
-  size(800, 600);
+  size(1200, 900);
   background(0, 0, 60);
 }
 public void draw() {
+  noStroke();
   fill(0, 0, 60, 20);
   rect(0, 0, width, height);
+
   if (Math.random() > 0.99) {
     Rocket newRocket = new Rocket((float)(Math.random()*width), height);
     newRocket.setYVel(-10 + ((float)(Math.random()-0.5)*2));
-    newRocket.setLifespan(150+(int)((Math.random()-0.5)*50));
+    newRocket.setLifespan(200+(int)((Math.random()-0.5)*50));
     rockets.add(newRocket);
   }
-  for (Rocket i : rockets) {
-    System.out.println(i.getY());
-  }
-  System.out.println();
+  //for (Rocket i : rockets) {
+  //  System.out.println(i.getY());
+  //}
   moveAll(rockets.size()-1);
 }
 
@@ -86,17 +98,30 @@ public void moveAll(int pos) {
   if (pos >= 0) {
     Rocket inQuestion = rockets.get(pos);
     if (inQuestion.getLifespan() > 0 && inQuestion.getY() < height + 10) {
-      if (Math.random()*inQuestion.getGen() < .1) {
-        Rocket newRocket = new Rocket(inQuestion);
-        System.out.println("Split!");
-        newRocket.setXVel(newRocket.getXVel()+(float)(Math.random()-0.5)*10);
-        rockets.add(newRocket);
+      if (Math.random()*inQuestion.getGen()*2 < .1) {
+        splitRocket(inQuestion, 2);
+        rockets.remove(pos);
+      } else {
+        inQuestion.move();
+        inQuestion.show();
       }
-      inQuestion.move();
-      inQuestion.show();
     } else {
       rockets.remove(pos);
     }
     moveAll(pos-1);
+  }
+}
+
+public void splitRocket(Rocket orig, double probability) {
+  if (Math.random() <= probability) {
+    Rocket newRocket = new Rocket(orig);
+    float orientation = (float)Math.random()*2*PI;
+    float power = (float)Math.random()*1;
+    newRocket.setXVel(orig.getXVel()+power*cos(orientation));
+    newRocket.setYVel(orig.getYVel()+power*sin(orientation));
+
+    System.out.println(newRocket.getXVel());        
+    rockets.add(newRocket);
+    splitRocket(orig, probability/1.5);
   }
 }
