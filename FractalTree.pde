@@ -118,9 +118,7 @@ public void splitRocket(Rocket orig, double probability) {
     float orientation = (float)Math.random()*2*PI;
     float power = (float)Math.random()*1;
     newRocket.setXVel(orig.getXVel()+power*cos(orientation));
-    newRocket.setYVel(orig.getYVel()+power*sin(orientation));
-
-    System.out.println(newRocket.getXVel());        
+    newRocket.setYVel(orig.getYVel()+power*sin(orientation)); 
     rockets.add(newRocket);
     splitRocket(orig, probability/1.5);
   }
