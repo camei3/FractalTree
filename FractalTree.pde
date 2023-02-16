@@ -19,7 +19,9 @@ public class Rocket {
     xVel = parent.getYVel();
     yVel = parent.getXVel();
     generation = parent.getGen()+1;
-    lightColor = color(255-10*generation);   
+    colorMode(HSB,255);    
+    lightColor = color(hue(parent.getColor())-2*generation,255-10*generation,255);   
+    colorMode(RGB,255);    
     lifespan = parent.getLifespan();
   }
   public float getX() {
@@ -74,7 +76,7 @@ public class Rocket {
 ArrayList <Rocket> rockets = new ArrayList <Rocket>();
 
 public void setup() {
-  size(1200, 900);
+  size(1200, 800);
   background(0, 0, 60);
 }
 public void draw() {
@@ -86,6 +88,9 @@ public void draw() {
     Rocket newRocket = new Rocket((float)(Math.random()*width), height);
     newRocket.setYVel(-10 + ((float)(Math.random()-0.5)*2));
     newRocket.setLifespan(200+(int)((Math.random()-0.5)*50));
+    colorMode(HSB,255);
+    newRocket.setColor(color((int)(Math.random()*255),255,255));
+    colorMode(RGB,255);    
     rockets.add(newRocket);
   }
   //for (Rocket i : rockets) {
@@ -118,7 +123,8 @@ public void splitRocket(Rocket orig, double probability) {
     float orientation = (float)Math.random()*2*PI;
     float power = (float)Math.random()*1;
     newRocket.setXVel(orig.getXVel()+power*cos(orientation));
-    newRocket.setYVel(orig.getYVel()+power*sin(orientation)); 
+    newRocket.setYVel(orig.getYVel()+power*sin(orientation)*2); 
+    newRocket.setLifespan(newRocket.getLifespan()+(int)newRocket.getY()/25);
     rockets.add(newRocket);
     splitRocket(orig, probability/1.5);
   }
