@@ -1,8 +1,8 @@
 public class Rocket {
-  private float xPos, yPos, oldX, oldY, newX, newY;
-  private float xVel, yVel;
-  private int generation, lifespan;
-  private color lightColor;
+  protected float xPos, yPos, oldX, oldY, newX, newY;
+  protected float xVel, yVel;
+  protected int generation, lifespan;
+  protected color lightColor;
   public Rocket(float x, float y) {
     xPos = oldX = newX = x;
     yPos = oldY = newY = y;
@@ -16,34 +16,21 @@ public class Rocket {
   public Rocket(Rocket parent) { //add old & new
     xPos = parent.getX();
     yPos = parent.getY();
+    newY = parent.getNewY();
+    newX = parent.getNewX();
+    oldX = parent.getOldX();
+    oldY = parent.getOldY();
     xVel = parent.getYVel();
     yVel = parent.getXVel();
     generation = parent.getGen()+1;
     colorMode(HSB,255);    
-    lightColor = color(hue(parent.getColor())-2*generation,255-10*generation,255);   
+    lightColor = color(
+      (hue(parent.getColor())+(int)((Math.random()-0.5)*generation*generation))%255,
+      255-10*generation,
+      255
+      );   
     colorMode(RGB,255);    
     lifespan = parent.getLifespan();
-  }
-  public float getX() {
-    return xPos;
-  }
-  public color getColor() {
-    return lightColor;
-  }
-  public void setColor(color newColor) {
-    lightColor = newColor;
-  }
-  public float getY() {
-    return yPos;
-  }
-  public float getXVel() {
-    return xVel;
-  }
-  public float getYVel() {
-    return yVel;
-  }  
-  public int getGen() {
-    return generation;
   }
 
   public void move() {
@@ -64,6 +51,39 @@ public class Rocket {
     stroke(lightColor);
     line(oldX,oldY,newX,newY);
   }  
+  public float getX() {
+    return xPos;
+  }
+  public float getY() {
+    return yPos;
+  }
+  public float getOldX() {
+    return oldX;
+  }
+  public float getOldY() {
+    return oldY;
+  }  
+  public float getNewX() {
+    return newX;
+  }
+  public float getNewY() {
+    return newY;
+  }    
+  public float getXVel() {
+    return xVel;
+  }
+  public float getYVel() {
+    return yVel;
+  }  
+  public int getGen() {
+    return generation;
+  }  
+  public color getColor() {
+    return lightColor;
+  }
+  public void setColor(color newColor) {
+    lightColor = newColor;
+  }  
   public void setYVel(float yV) {
     yVel = yV;
   }
@@ -76,14 +96,43 @@ public class Rocket {
   public int  getLifespan() {
     return lifespan;
   }
+  
 }
+
+public class RocketStar extends Rocket {
+  public RocketStar(float x, float y) {
+    super(x,y);
+    yVel = -40;
+    System.out.println('!');
+  }
+  public RocketStar(Rocket rocket) {
+    super(rocket);
+  }
+  public void move() {
+    oldX = newX;
+    oldY = newY;
+    newY = yPos + (float)(Math.random()-0.5)*2;
+    newX = xPos + (float)(Math.random()-0.5)*2;
+    xPos += xVel;
+    yPos += yVel;
+    yVel /= 1.1; //could be moved before xPos in move()
+    xVel /= 1.1;
+    lifespan--;
+  }
+}
+
 
 ArrayList <Rocket> rockets = new ArrayList <Rocket>();
 
 public void setup() {
   size(1200, 800);
-  background(0, 0, 60);
+  background(0, 0, 40);
 }
+
+public void mousePressed() {
+  rockets.add(new RocketStar(mouseX,height));
+}
+
 public void draw() {
   noStroke();
   fill(0, 0, 60, 20);
@@ -124,12 +173,27 @@ public void moveAll(int pos) {
 
 public void splitRocket(Rocket orig, double probability) {
   if (Math.random() <= probability) {
-    Rocket newRocket = new Rocket(orig);
-    float orientation = (float)Math.random()*2*PI;
-    float power = (float)Math.random()*1;
-    newRocket.setXVel(orig.getXVel()+power*cos(orientation));
-    newRocket.setYVel(orig.getYVel()+power*sin(orientation)*2); 
-    newRocket.setLifespan(newRocket.getLifespan()+(int)newRocket.getY()/25);
+    Rocket newRocket;
+    float power;
+    float orientation = (float)Math.random()*2*PI;    
+    if (orig instanceof RocketStar) {
+      newRocket = new RocketStar(orig);
+      power = (float)Math.random()*2;
+      orig.setLifespan(orig.getLifespan()/2);
+      newRocket.setXVel(power*cos(orientation)*2);
+      newRocket.setYVel(power*sin(orientation)*2);  
+      //maybe very low grav?
+    } else {
+      newRocket = new Rocket(orig);
+      newRocket.setLifespan(newRocket.getLifespan()+(int)newRocket.getY()/25);  
+      power = (float)Math.random()*1;
+      newRocket.setXVel(orig.getXVel()+power*cos(orientation));
+      newRocket.setYVel(orig.getYVel()+power*sin(orientation)*2);       
+    }
+
+
+
+
     rockets.add(newRocket);
     splitRocket(orig, probability/1.5);
   }
