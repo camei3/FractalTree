@@ -1,11 +1,11 @@
 public class Rocket {
-  private float xPos, yPos;
+  private float xPos, yPos, oldX, oldY, newX, newY;
   private float xVel, yVel;
   private int generation, lifespan;
   private color lightColor;
   public Rocket(float x, float y) {
-    xPos = x;
-    yPos = y;
+    xPos = oldX = newX = x;
+    yPos = oldY = newY = y;
     xVel = 0;
     yVel = 0;
     generation = 1;
@@ -13,7 +13,7 @@ public class Rocket {
     setLifespan(100);
   }
 
-  public Rocket(Rocket parent) {
+  public Rocket(Rocket parent) { //add old & new
     xPos = parent.getX();
     yPos = parent.getY();
     xVel = parent.getYVel();
@@ -45,12 +45,12 @@ public class Rocket {
   public int getGen() {
     return generation;
   }
-  public void show() {
-    strokeWeight(10/(generation+1));
-    stroke(lightColor);
-    point(xPos, yPos);
-  }
+
   public void move() {
+    oldX = newX;
+    oldY = newY;
+    newY = yPos + (float)(Math.random()-0.5)*2;
+    newX = xPos + (float)(Math.random()-0.5)*2;
     xPos += xVel;
     yPos += yVel;
     yVel += 0.1; //could be moved before xPos in move()
@@ -59,6 +59,11 @@ public class Rocket {
       lifespan /= 1.1;
     }
   }
+  public void show() {
+    strokeWeight(10/(generation+1));
+    stroke(lightColor);
+    line(oldX,oldY,newX,newY);
+  }  
   public void setYVel(float yV) {
     yVel = yV;
   }
