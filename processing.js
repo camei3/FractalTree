@@ -12491,7 +12491,7 @@ module.exports = function setupParser(Processing, options) {
       if (s === 0) { // Grayscale
         return [br, br, br];
       }
-      var hue = h % 360;
+      var hue = (h+360) % 360; // <- maybe fix?
       var f = hue % 60;
       var p = Math.round((b * (100 - s)) / 10000 * 255);
       var q = Math.round((b * (6000 - s * f)) / 600000 * 255);
