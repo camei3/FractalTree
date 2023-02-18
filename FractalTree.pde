@@ -9,9 +9,7 @@ public class Rocket {
     xVel = 0;
     yVel = 0;
     generation = 1;
-    colorMode(HSB,255);
     setColor(color((int)(Math.random()*255),255,255));
-    colorMode(RGB,255);       
     setLifespan(100);
   }
 
@@ -25,13 +23,11 @@ public class Rocket {
     xVel = parent.getYVel();
     yVel = parent.getXVel();
     generation = parent.getGen()+1;
-    colorMode(HSB,255);    
     lightColor = color(
-      (0*255+(hue(parent.getColor())+0*(int)((Math.random()-0.5)*generation*generation)))%255,
+      (255+(hue(parent.getColor())+(int)((Math.random()-0.5)*generation*generation)))%255,
       255-10*generation,
       255
-      );   
-    colorMode(RGB,255);    
+      );     
     lifespan = parent.getLifespan();
   }
 
@@ -126,8 +122,9 @@ public class RocketStar extends Rocket {
 ArrayList <Rocket> rockets = new ArrayList <Rocket>();
 
 public void setup() {
+  colorMode(HSB,360,100,100);
   size(1200, 800);
-  background(0, 0, 40);
+  background(240, 100, 15);
 }
 boolean pressed = false;
 public void mousePressed() {
@@ -139,7 +136,7 @@ public void mouseReleased() {
 
 public void draw() {
   noStroke();
-  fill(0, 0, 60, 20);
+  fill(240,100,15,20);
   rect(0, 0, width, height);
   if (pressed) {
     rockets.add(new RocketStar(mouseX,height));
