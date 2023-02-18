@@ -24,7 +24,7 @@ public class Rocket {
     yVel = parent.getXVel();
     generation = parent.getGen()+1;
     lightColor = color(
-      abs((360+(int)(hue(parent.getColor())+(int)((Math.random()-0.5)*generation*generation)))%360),
+      (int)(hue(parent.getColor())+(int)((Math.random()-0.5)*generation*generation))%360,
       100-10*generation,
       100
       );     
