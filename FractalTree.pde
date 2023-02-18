@@ -27,7 +27,7 @@ public class Rocket {
     generation = parent.getGen()+1;
     colorMode(HSB,255);    
     lightColor = color(
-      (255+(hue(parent.getColor())+(int)((Math.random()-0.5)*generation*generation)))%255,
+      (0*255+(hue(parent.getColor())+0*(int)((Math.random()-0.5)*generation*generation)))%255,
       255-10*generation,
       255
       );   
