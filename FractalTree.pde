@@ -9,7 +9,9 @@ public class Rocket {
     xVel = 0;
     yVel = 0;
     generation = 1;
-    lightColor = color((int)(Math.random())*256);
+    colorMode(HSB,255);
+    setColor(color((int)(Math.random()*255),255,255));
+    colorMode(RGB,255);       
     setLifespan(100);
   }
 
@@ -102,8 +104,7 @@ public class Rocket {
 public class RocketStar extends Rocket {
   public RocketStar(float x, float y) {
     super(x,y);
-    yVel = -40;
-    System.out.println('!');
+    yVel = -60;
   }
   public RocketStar(Rocket rocket) {
     super(rocket);
@@ -128,28 +129,27 @@ public void setup() {
   size(1200, 800);
   background(0, 0, 40);
 }
-
+boolean pressed = false;
 public void mousePressed() {
-  rockets.add(new RocketStar(mouseX,height));
+  pressed = true;
+}
+public void mouseReleased() {
+  pressed = false;
 }
 
 public void draw() {
   noStroke();
   fill(0, 0, 60, 20);
   rect(0, 0, width, height);
-
+  if (pressed) {
+    rockets.add(new RocketStar(mouseX,height));
+  }
   if (Math.random() > 0.99) {
     Rocket newRocket = new Rocket((float)(Math.random()*width), height);
     newRocket.setYVel(-10 + ((float)(Math.random()-0.5)*2));
-    newRocket.setLifespan(200+(int)((Math.random()-0.5)*50));
-    colorMode(HSB,255);
-    newRocket.setColor(color((int)(Math.random()*255),255,255));
-    colorMode(RGB,255);    
+    newRocket.setLifespan(200+(int)((Math.random()-0.5)*50)); 
     rockets.add(newRocket);
   }
-  //for (Rocket i : rockets) {
-  //  System.out.println(i.getY());
-  //}
   moveAll(rockets.size()-1);
 }
 
@@ -178,10 +178,12 @@ public void splitRocket(Rocket orig, double probability) {
     float orientation = (float)Math.random()*2*PI;    
     if (orig instanceof RocketStar) {
       newRocket = new RocketStar(orig);
-      power = (float)Math.random()*2;
+      power = ((float)Math.random()+4)/orig.getGen();
       orig.setLifespan(orig.getLifespan()/2);
       newRocket.setXVel(power*cos(orientation)*2);
       newRocket.setYVel(power*sin(orientation)*2);  
+      rockets.add(newRocket);
+      splitRocket(orig, probability/1.05);   
       //maybe very low grav?
     } else {
       newRocket = new Rocket(orig);
@@ -189,12 +191,13 @@ public void splitRocket(Rocket orig, double probability) {
       power = (float)Math.random()*1;
       newRocket.setXVel(orig.getXVel()+power*cos(orientation));
       newRocket.setYVel(orig.getYVel()+power*sin(orientation)*2);       
+      rockets.add(newRocket);
+      splitRocket(orig, probability/1.5);     
     }
 
 
 
 
-    rockets.add(newRocket);
-    splitRocket(orig, probability/1.5);
+
   }
 }
