@@ -9,7 +9,7 @@ public class Rocket {
     xVel = 0;
     yVel = 0;
     generation = 1;
-    setColor(color((int)(Math.random()*255),255,255));
+    setColor(color((int)(Math.random()*360),100,100));
     setLifespan(100);
   }
 
@@ -24,9 +24,9 @@ public class Rocket {
     yVel = parent.getXVel();
     generation = parent.getGen()+1;
     lightColor = color(
-      (255+(hue(parent.getColor())+(int)((Math.random()-0.5)*generation*generation)))%255,
-      255-10*generation,
-      255
+      (360+(hue(parent.getColor())+(int)((Math.random()-0.5)*generation*generation)))%360,
+      100-10*generation,
+      100
       );     
     lifespan = parent.getLifespan();
   }
